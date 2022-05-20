@@ -40,6 +40,18 @@ git fetch origin $HEAD_BRANCH
 # do the merge
 git checkout -b $HEAD_BRANCH origin/$HEAD_BRANCH
 git fetch origin $BRANCH_TO_MERGE
-git merge origin/$BRANCH_TO_MERGE --no-edit
+if git merge origin/$BRANCH_TO_MERGE --no-edit; then
+  echo "Merged $BRANCH_TO_MERGE into $HEAD_BRANCH"
+else
+  echo "Failed to merge $BRANCH_TO_MERGE into $HEAD_BRANCH"
+  if [[ -z $(git diff --name-status --diff-filter=U |grep -v .build) ]]; then
+    echo "Conflicts only in .build files, ignoring"
+    git merge origin/$BRANCH_TO_MERGE --no-edit -X theirs
+    echo "Merged $BRANCH_TO_MERGE into $HEAD_BRANCH"
+  else
+    echo "Conflicts cannot be automatically resolved"
+    exit 1
+  fi
+fi
 git push origin $HEAD_BRANCH
 git push origin --delete $BRANCH_TO_MERGE
