@@ -3,7 +3,7 @@
 This Action merges pull requests and deletes the branch associated with the PR.
 
 # Checkout step ref
-For pull request events the reference [defaults to the merge branch ](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request). Setting the `ref` parameter to `${{ github.event.pull_request.head.ref }}` allows the action to run agains the head commit in the PR.
+For pull request events the reference [defaults to the merge branch ](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request). Setting the `ref` [parameter](https://github.com/actions/checkout#checkout-v3) to `${{ github.event.pull_request.head.ref }}` and the `fetch-depth` parameter to 0 allows the action to run agains the head commit in the PR and do the necessary merge.
 
 # Environment Variables
 - `GITHUB_TOKEN` - _Required_ Allows the Action to authenticte with the GitHub API.
@@ -52,6 +52,7 @@ jobs:
     - uses: actions/checkout@v3.3.0
       with:
         ref: ${{ github.event.pull_request.head.ref }}
+        fetch-depth: 0
     
     - uses: hmarr/auto-approve-action@v2.0.0
       with:
